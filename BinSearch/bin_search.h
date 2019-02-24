@@ -10,4 +10,4 @@
 #endif //BINSEARCH_BIN_SEARCH_H
 
 
-bool bin_search( const std::vector<int>& vect, const int& value );
+bool bin_search( std::vector<int>::iterator first,  std::vector<int>::iterator last, const int& value );

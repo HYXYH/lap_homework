@@ -5,22 +5,22 @@
 #include <iostream>
 #include "bin_search.h"
 
-bool bin_search( const std::vector<int>& vect, const int& value )
+bool bin_search( std::vector<int>::iterator first,  std::vector<int>::iterator last, const int& value )
 {
-	if (vect.empty())
+	if (first == last)
 	{
 		return false;
 	}
 
-	long begin = 0, end = vect.size();
+	long begin = 0, end = last-first;
 	long mid = end / 2;
 	long old_mid = -1;
 	while (mid != old_mid){
-		if(vect[mid] == value){
+		if(*(first + mid) == value){
 			return true;
 		}
 
-		if (vect[mid] < value){
+		if (*(first + mid) < value){
 			begin = mid;
 		}
 		else {

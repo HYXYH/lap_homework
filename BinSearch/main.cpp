@@ -11,7 +11,7 @@ int main() {
 	cout << "input number to find:" << std::endl;
 	cin >> toFind;
 
-	bool isFound = bin_search(data, toFind);
+	bool isFound = bin_search(data.begin(), data.end(), toFind);
 	if(isFound){
 		cout << "Yep, " << toFind << " is found";
 	}
