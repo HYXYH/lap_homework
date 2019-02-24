@@ -7,9 +7,14 @@
 
 bool bin_search( std::vector<int>::iterator first,  std::vector<int>::iterator last, const int& value )
 {
+	bool is_ascending = true;
 	if (first == last)
 	{
 		return false;
+	}
+	if (*first > *(last - 1))
+	{
+		is_ascending = false;
 	}
 
 	long begin = 0, end = last-first;
@@ -21,10 +26,24 @@ bool bin_search( std::vector<int>::iterator first,  std::vector<int>::iterator l
 		}
 
 		if (*(first + mid) < value){
-			begin = mid;
+			if (is_ascending)
+			{
+				begin = mid;
+			}
+			else
+			{
+				end = mid;
+			}
 		}
 		else {
-			end = mid;
+			if (is_ascending)
+			{
+				end = mid;
+			}
+			else
+			{
+				begin = mid;
+			}
 		}
 		old_mid = mid;
 		mid = (begin + end) / 2;

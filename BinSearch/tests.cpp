@@ -7,7 +7,7 @@
 #include "bin_search.h"
 
 TEST_CASE( "Binary search for existing elements", "[bin_search]" ) {
-	std::vector<int> vect(1000);
+	std::vector<int> vect;
 	for (int i = 0; i < 1000; i++){
 		vect.push_back(i);
 	}
@@ -20,7 +20,7 @@ TEST_CASE( "Binary search for existing elements", "[bin_search]" ) {
 }
 
 TEST_CASE( "Binary search for not existing elements", "[bin_search]" ) {
-	std::vector<int> vect(1000);
+	std::vector<int> vect;
 	for (int i = 0; i < 1000; i++){
 		vect.push_back(i);
 	}
@@ -32,7 +32,7 @@ TEST_CASE( "Binary search for not existing elements", "[bin_search]" ) {
 }
 
 TEST_CASE( "Binary search for vector with missed elements", "[bin_search]" ) {
-	std::vector<int> vect(1000);
+	std::vector<int> vect;
 	for (int i = 0; i < 1000; i++){
 		if (i % 5 == 0 )
 		vect.push_back(i);
@@ -54,4 +54,23 @@ TEST_CASE( "Binary search for vector with missed elements", "[bin_search]" ) {
 	REQUIRE( bin_search(vect.begin(), vect.end(), 995) == true );
 	REQUIRE( bin_search(vect.begin(), vect.end(), 999) == false );
 	REQUIRE( bin_search(vect.begin(), vect.end(), 1000) == false );
+}
+
+
+TEST_CASE( "Binary search for descending sorted vector", "[bin_search]" ) {
+	std::vector<int> vect;
+	for (int i = 1000; i > 0; i--){
+		vect.push_back(i);
+	}
+
+	REQUIRE(vect.back() != 0 );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 0) == false );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 999) == true );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 500) == true );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 501) == true );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 499) == true );
+	REQUIRE( bin_search(vect.begin(), vect.end(), -10) == false );
+	REQUIRE( bin_search(vect.begin(), vect.end(), -1) == false );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 1000) == true );
+	REQUIRE( bin_search(vect.begin(), vect.end(), 1001) == false );
 }
