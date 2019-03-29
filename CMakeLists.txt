@@ -5,3 +5,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_subdirectory(BinSearch)
 add_subdirectory(Complex)
+add_subdirectory(List)
+#add_subdirectory(Queue)
