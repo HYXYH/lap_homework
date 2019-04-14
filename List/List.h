@@ -19,9 +19,12 @@ class Node {
   std::shared_ptr<Node<T>> _prev;
 
  public:
-  Node() {};
-  Node(T value) {
+  Node() = default;
+  Node(T& value) {
     _value = std::make_shared<T>(value);
+  };
+  Node(T&& value) {
+    _value = std::make_shared<T>(std::move(value));
   };
 
   friend class List<T>;
@@ -36,8 +39,37 @@ class List {
  public:
   List() : _size(0), _first(nullptr), _last(nullptr) {};
 
+  ~List(){
+    if (_first != nullptr) {
+      auto cur = _first;
+      while (cur->_next != nullptr) {
+        cur = cur->_next;
+        cur->_prev->_next = nullptr;
+      }
+    }
+  }
+
+  List(List&& other) noexcept {
+    std::swap(_first, other._first);
+    std::swap(_last, other._last);
+    std::swap(_size, other._size);
+  }
+
   void push_back(T value) {
     auto node = std::make_shared<Node<T>>(value);
+    if (_size == 0) {
+      _first = node;
+      _last = node;
+    } else {
+      _last->_next = node;
+      _last->_next->_prev = _last;
+      _last = _last->_next;
+    }
+    _size++;
+  }
+
+  void emplace_back(T&& value) {
+    auto node = std::make_shared<Node<T>>(std::move(value));
     if (_size == 0) {
       _first = node;
       _last = node;

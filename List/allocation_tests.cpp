@@ -20,6 +20,7 @@ class TestElement {
 
   TestElement(TestElement &&te) noexcept {
     value = te.value;
+    te.value = -1;
     std::cout << "copy&&: " << value << "\n";
   }
 
@@ -39,12 +40,14 @@ int main() {
   List<TestElement> list;
   std::cout << "PUSH" << "\n";
 
-  for (int i = 0; i < 5; i++) {
-    list.push_back(std::move(TestElement()));
+  for (int i = 0; i < 3; i++) {
+    list.emplace_back(std::move(TestElement()));
+//    list.push_back(TestElement());
   }
 
-  list.pop_back();
-  list.pop_front();
+  // почему нельзя 2 push_back: один по значению, другой T&& ?
+
+  std::cout << "dtor" << "\n";
 
   return 0;
 }
