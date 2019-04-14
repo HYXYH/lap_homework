@@ -13,7 +13,7 @@ class Queue {
 	List<T> _queue;
 
 	void checkSize(){
-		if (getSize() <= 0)
+		if (isEmpty())
 		{
 			throw std::range_error("top from empty queue");
 		}
@@ -34,8 +34,8 @@ public:
 		_queue.push_back(value);
 	}
 
-	long getSize(){
-		return _queue.getSize();
+	long isEmpty(){
+		return _queue.getSize() == 0;
 	}
 };
 
