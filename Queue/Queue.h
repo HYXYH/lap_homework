@@ -5,39 +5,36 @@
 #ifndef LAP_HOMEWORK_QUEUE_H
 #define LAP_HOMEWORK_QUEUE_H
 
-
 #include "../List/List.h"
 
-template <class T>
+template<class T>
 class Queue {
-	List<T> _queue;
+  List<T> _queue;
 
-	void checkSize(){
-		if (isEmpty())
-		{
-			throw std::range_error("top from empty queue");
-		}
-	}
+  void checkSize() {
+    if (isEmpty()) {
+      throw std::range_error("top from empty queue");
+    }
+  }
 
-public:
-	T top(){
-		checkSize();
-		return *_queue[0];
-	}
+ public:
+  T top() {
+    checkSize();
+    return *_queue[0];
+  }
 
-	void pop(){
-		checkSize();
-		_queue.pop_front();
-	}
+  void pop() {
+    checkSize();
+    _queue.pop_front();
+  }
 
-	void push(T value){
-		_queue.push_back(value);
-	}
+  void push(T value) {
+    _queue.push_back(value);
+  }
 
-	long isEmpty(){
-		return _queue.getSize() == 0;
-	}
+  long isEmpty() {
+    return _queue.getSize() == 0;
+  }
 };
-
 
 #endif //LAP_HOMEWORK_QUEUE_H
