@@ -16,18 +16,18 @@ class Complex {
   explicit Complex(double real) : _real(real), _imag(0) {};
 
   Complex(double real, double imaginary) : _real(real), _imag(imaginary) {};
-//	Complex(Complex&& c);
+  Complex(Complex &&c) noexcept ;
 
-  Complex operator=(Complex c);
+  Complex operator=(Complex& c) const;
 
-  Complex operator+(Complex c);
-  Complex operator+(double d);
-  Complex operator-(Complex c);
-  Complex operator-(double d);
-  Complex operator*(Complex c);
-  Complex operator*(double d);
-  Complex operator/(Complex c);
-  Complex operator/(double d);
+  Complex operator+(Complex& c);
+  Complex operator+(double& d);
+  Complex operator-(Complex& c);
+  Complex operator-(double& d);
+  Complex operator*(Complex& c);
+  Complex operator*(double& d);
+  Complex operator/(Complex& c);
+  Complex operator/(double& d);
 
   double abs();
   Complex conj();
