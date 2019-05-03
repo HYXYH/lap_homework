@@ -49,7 +49,27 @@ class List {
     }
   }
 
+  List(List& other) noexcept {
+    List();
+    if (other._size > 0) {
+      auto curr2 = other._first;
+      _first = std::make_shared<Node<T>>(*(curr2->_value));
+      _first->_prev == nullptr;
+      auto curr1 = _first;
+      for (int i = 1; i < other._size; i++){
+        curr2 = curr2->_next;
+        curr1->_next = std::make_shared<Node<T>>(*(curr2->_value));
+        curr1->_next->_prev = curr1;
+        curr1 = curr1->_next;
+      }
+      curr1->_next = nullptr;
+      _last = curr1;
+      _size = other._size;
+    }
+  }
+
   List(List&& other) noexcept {
+    _size = 0;
     std::swap(_first, other._first);
     std::swap(_last, other._last);
     std::swap(_size, other._size);

@@ -16,6 +16,7 @@ class Complex {
   explicit Complex(double real) : _real(real), _imag(0) {};
 
   Complex(double real, double imaginary) : _real(real), _imag(imaginary) {};
+  Complex(Complex &c) noexcept ;
   Complex(Complex &&c) noexcept ;
 
   Complex operator=(Complex& c) const;

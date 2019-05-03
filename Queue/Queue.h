@@ -18,6 +18,10 @@ class Queue {
   }
 
  public:
+  Queue() {}
+  Queue(Queue &q) : _queue(q._queue) {}
+  Queue(Queue &&q) : _queue(std::move(q._queue)) {}
+
   T top() {
     checkSize();
     return *_queue[0];

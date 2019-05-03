@@ -67,6 +67,11 @@ Complex Complex::operator/(double& d) {
   return Complex(_real / d, _imag);
 }
 
+Complex::Complex(Complex &c) noexcept {
+  _real = c._real;
+  _imag = c._imag;
+}
+
 Complex::Complex(Complex &&c) noexcept {
   std::swap(_real, c._real);
   std::swap(_imag, c._imag);
