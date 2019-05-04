@@ -1,7 +1,9 @@
 // dear imgui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
 // If you are new to dear imgui, see examples/README.txt and documentation at the top of imgui.cpp.
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan graphics context creation, etc.)
-
+#include <cv.h>
+//#include <highgui.h>
+#include <opencv2/core/types_c.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -133,14 +135,14 @@ void showOutputCanvas(ImVector<ImVec2> &points) {
                           ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y),
                           true);      // clip lines within the canvas (if we resize it, etc.)
   // draw lines
-  for (int i = 0; i < points.Size - 1; i++) {
+  for (int i = 0; i < points.size() - 1; i++) {
     draw_list->AddLine(ImVec2(canvas_pos.x + points[i].x, canvas_pos.y + points[i].y),
                        ImVec2(canvas_pos.x + points[i + 1].x, canvas_pos.y + points[i + 1].y),
                        IM_COL32(255, 255, 0, 255),
                        2.0f);
   }
   draw_list->AddLine(ImVec2(canvas_pos.x + points[0].x, canvas_pos.y + points[0].y),
-                     ImVec2(canvas_pos.x + points[points.Size - 1].x, canvas_pos.y + points[points.Size - 1].y),
+                     ImVec2(canvas_pos.x + points[points.size() - 1].x, canvas_pos.y + points[points.size() - 1].y),
                      IM_COL32(255, 255, 0, 255),
                      2.0f);
   draw_list->PopClipRect();
@@ -177,7 +179,7 @@ bool isConvex(ImVector<ImVec2> &points) {
   return true;
 }
 
-void showInputCanvas(ImVector<ImVec2> &points) {
+void showInputCanvas(ImVector<ImVec2> &points, ImVec2& canvas_size) {
   bool p_open;
   if (!ImGui::Begin("Input canvas", &p_open, ImGuiWindowFlags_NoMove)) {
     ImGui::End();
@@ -192,7 +194,7 @@ void showInputCanvas(ImVector<ImVec2> &points) {
   ImGui::Text("Left-click and drag to move vertex");
 
   ImVec2 canvas_pos = ImGui::GetCursorScreenPos();            // ImDrawList API uses screen coordinates!
-  ImVec2 canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
+  canvas_size = ImGui::GetContentRegionAvail();        // Resize canvas to what's available
   draw_list->AddRectFilledMultiColor(canvas_pos,
                                      ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y),
                                      IM_COL32(50, 50, 50, 255),
@@ -206,18 +208,15 @@ void showInputCanvas(ImVector<ImVec2> &points) {
   static ImU32 statusColor = IM_COL32(0, 255, 0, 255);
   static ImU32 color = IM_COL32(0, 255, 0, 255);
   static int drag_idx = -1;
-  int edge = 100;
-  float offsety = canvas_size.y / 2;
-  float offsetx = canvas_size.x / 2;
-  int clickZoneRadius = 15;
-  if (points.size() == 0) {
-    points.push_back(ImVec2(offsetx - edge, offsety - edge));
-    points.push_back(ImVec2(offsetx + edge, offsety - edge));
-    points.push_back(ImVec2(offsetx + edge, offsety + edge));
-    points.push_back(ImVec2(offsetx - edge, offsety + edge));
+
+  if (points.Size == 0){
+    ImGui::End();
+    return;
   }
 
-  for (int i = 0; i < points.Size; i++) {
+  int clickZoneRadius = 15;
+
+  for (int i = 0; i < points.size(); i++) {
     float diffx = points[i].x - (ImGui::GetIO().MousePos.x - canvas_pos.x);
     float diffy = points[i].y - (ImGui::GetIO().MousePos.y - canvas_pos.y);
     float dist = std::sqrt(diffx * diffx + diffy * diffy);
@@ -245,7 +244,7 @@ void showInputCanvas(ImVector<ImVec2> &points) {
   draw_list->PushClipRect(canvas_pos,
                           ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y),
                           true);      // clip lines within the canvas (if we resize it, etc.)
-  for (int i = 0; i < points.Size; i++) {
+  for (int i = 0; i < points.size(); i++) {
     if (i != drag_idx) {
       color = IM_COL32(255, 255, 0, 255);
     } else {
@@ -272,6 +271,28 @@ void showInputCanvas(ImVector<ImVec2> &points) {
   ImGui::End();
 }
 
+cv::Mat resetPoints(ImVector<ImVec2> &points, int edge, ImVec2 canvas_size){
+  float offsety = canvas_size.y / 2;
+  float offsetx = canvas_size.x / 2;
+  points.push_back(ImVec2(offsetx - edge + rand() % 100, offsety - edge + rand() % 100));
+  points.push_back(ImVec2(offsetx + edge + rand() % 100, offsety - edge + rand() % 100));
+  points.push_back(ImVec2(offsetx + edge + rand() % 100, offsety + edge + rand() % 100));
+  points.push_back(ImVec2(offsetx - edge + rand() % 100, offsety + edge + rand() % 100));
+
+  std::vector<cv::Point2f> srcPoints;
+  for (int i = 0; i < points.Size; i++) {
+    srcPoints.push_back(cv::Point2f(points[i].x, points[i].y));
+  }
+
+  std::vector<cv::Point2f> dstPoints;
+  dstPoints.push_back(cv::Point2f(offsetx - edge, offsety - edge));
+  dstPoints.push_back(cv::Point2f(offsetx + edge, offsety - edge));
+  dstPoints.push_back(cv::Point2f(offsetx + edge, offsety + edge));
+  dstPoints.push_back(cv::Point2f(offsetx - edge, offsety + edge));
+
+  return cv::findHomography(srcPoints, dstPoints, CV_RANSAC);
+}
+
 int main() {
   // Setup window
   GLFWwindow *window = initContext();
@@ -288,8 +309,10 @@ int main() {
   height = mode->height;
 
   ImVec2 windowSize(400, 560);
-
+  ImVec2 canvasSize;
+  int edge = 100;
   ImVector<ImVec2> points;
+  cv::Mat H;
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {
@@ -300,11 +323,27 @@ int main() {
     {
       ImGui::SetNextWindowPos(ImVec2(width / 2 - windowSize.x, (height - windowSize.y) / 2));
       ImGui::SetNextWindowSize(windowSize);
-      showInputCanvas(points);
+      showInputCanvas(points, canvasSize);
+
+      if (points.size() == 0) {
+        H = resetPoints(points, edge, canvasSize);
+      }
+
+      std::vector<cv::Point2f> srcPoints;
+      for (int i = 0; i < points.size(); i++) {
+        srcPoints.push_back(cv::Point2f(points[i].x, points[i].y));
+      }
+      std::vector<cv::Point2f> dstPoints(4);
+      perspectiveTransform( srcPoints, dstPoints, H);
+
+      ImVector<ImVec2> points2;
+      for (int i = 0; i < dstPoints.size(); i++) {
+        points2.push_back(ImVec2(dstPoints[i].x, dstPoints[i].y));
+      }
 
       ImGui::SetNextWindowPos(ImVec2(width / 2, (height - windowSize.y) / 2));
       ImGui::SetNextWindowSize(windowSize);
-      showOutputCanvas(points);
+      showOutputCanvas(points2);
     }
 
     renderFrame(window);
